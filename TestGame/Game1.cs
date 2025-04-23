@@ -120,8 +120,15 @@ public class Game1 : Game
 
         _spriteBatch.Begin();
 
+        // --- Vykresli platformy
+        Rectangle platformSource = new Rectangle(0, 8, 30, 30); // výřez dlaždice pod hráčem
+        foreach (var platformPos in platformPositions)
+        {
+            _spriteBatch.Draw(playerTexture, platformPos, platformSource, Color.White);
+        }
+
         // --- Vykresli hráče
-        Rectangle playerRect = new Rectangle(0, 0, 8, 8);
+        Rectangle playerRect = new Rectangle(0, 0, 8, 8); // výřez hráče
         _spriteBatch.Draw(playerTexture, playerPosition, playerRect, Color.White);
 
         _spriteBatch.End();
