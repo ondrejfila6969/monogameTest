@@ -28,8 +28,8 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // Načteme rozměry okna
-        windowWidth = _graphics.PreferredBackBufferWidth;
-        windowHeight = _graphics.PreferredBackBufferHeight + 120;
+        windowWidth = _graphics.PreferredBackBufferWidth + 105;
+        windowHeight = _graphics.PreferredBackBufferHeight + 97;
         Console.WriteLine(windowHeight);
         base.Initialize();
     }
@@ -49,34 +49,49 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // Aplikování gravitace na rychlost
-        playerVelocity.Y += gravity;  // Zvyšování rychlosti směrem dolů
+        // Získání stavu klávesnice
+        KeyboardState keyboardState = Keyboard.GetState();
 
-        // Aktualizace pozice hráče (pozice = pozice + rychlost)
-        playerPosition += playerVelocity;
+        // Vodorovný pohyb
+        float moveSpeed = 3f;
+
+        if (keyboardState.IsKeyDown(Keys.A))
+        {
+            playerPosition.X -= moveSpeed;
+        }
+        if (keyboardState.IsKeyDown(Keys.D))
+        {
+            playerPosition.X += moveSpeed;
+        }
+
+        // Aplikování gravitace na rychlost
+        playerVelocity.Y += gravity;
+
+        // Aktualizace pozice hráče
+        playerPosition += new Vector2(0, playerVelocity.Y);
 
         // Zastavení hráče, pokud dosáhne spodního okraje okna
         if (playerPosition.Y + playerTexture.Height > windowHeight)
         {
-            playerPosition.Y = windowHeight - playerTexture.Height;  // Nastaví pozici tak, že spodní okraj je na okraji obrazovky
-            playerVelocity.Y = 0;  // Zastaví pohyb směrem dolů
+            playerPosition.Y = windowHeight - playerTexture.Height;
+            playerVelocity.Y = 0;
         }
 
         // Zastavení hráče, pokud dosáhne horního okraje okna
         if (playerPosition.Y < 0)
         {
-            playerPosition.Y = 0;  // Nastavení hráče na horní okraj
-            playerVelocity.Y = 0;  // Zastavení pohybu směrem nahoru
+            playerPosition.Y = 0;
+            playerVelocity.Y = 0;
         }
 
-        // Omezení pohybu na ose X (pokud hráč vyjde z okna)
+        // Omezení pohybu na ose X (okraje obrazovky)
         if (playerPosition.X < 0)
         {
-            playerPosition.X = 0;  // Levý okraj okna
+            playerPosition.X = 0;
         }
         if (playerPosition.X + playerTexture.Width > windowWidth)
         {
-            playerPosition.X = windowWidth - playerTexture.Width;  // Pravý okraj okna
+            playerPosition.X = windowWidth - playerTexture.Width;
         }
 
         base.Update(gameTime);
@@ -89,7 +104,7 @@ public class Game1 : Game
         _spriteBatch.Begin();
 
         // Nastavíme velikost spritu na 8x8 pixelů
-        Rectangle rectangle = new Rectangle(0, 0, 8, 8);
+        Rectangle rectangle = new Rectangle(0, 0, 100, 100);
         
         // Vykreslíme hráče na obrazovku
         _spriteBatch.Draw(playerTexture, playerPosition, rectangle, Color.White);
