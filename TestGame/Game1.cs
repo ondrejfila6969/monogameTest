@@ -43,11 +43,8 @@ public class Game1 : Game
     {
         platformPositions = new List<Vector2>
         {
-            new Vector2(100, 500),
-            new Vector2(250, 450),
             new Vector2(400, 400),
-            new Vector2(600, 500),
-            new Vector2(100, windowHeight - 20) // základní podlaha
+            new Vector2(600, 400),
         };
         
         // Načtení textury hráče
@@ -101,7 +98,7 @@ public class Game1 : Game
             // Hráč narazil na horní stranu platformy (spadne dolů)
             if (futurePlayerBounds.Right > platformRect.Left && futurePlayerBounds.Left < platformRect.Right)
             {
-                playerPosition.Y = platformRect.Top - 8; // Umístíme hráče těsně nad platformu
+                playerPosition.Y = platformRect.Top - 6; // Umístíme hráče těsně nad platformu
                 playerVelocity.Y = 0;
                 isOnGround = true;
                 collisionWithPlatform = true;
