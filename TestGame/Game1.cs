@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -12,8 +13,11 @@ public class Game1 : Game
     private Vector2 playerPosition;
     private Vector2 playerVelocity;  // Rychlost hráče (počátečně 0)
     private const float gravity = 0.5f;  // Gravitace (akcelerace)
-    private const float groundLevel = 400f;  // Úroveň, kde hráč "dopadne"
     
+    // Rozměry okna
+    private int windowWidth;
+    private int windowHeight;
+
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -23,7 +27,10 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
+        // Načteme rozměry okna
+        windowWidth = _graphics.PreferredBackBufferWidth;
+        windowHeight = _graphics.PreferredBackBufferHeight + 120;
+        Console.WriteLine(windowHeight);
         base.Initialize();
     }
 
@@ -36,7 +43,7 @@ public class Game1 : Game
 
         _spriteBatch = new SpriteBatch(GraphicsDevice);
     }
-
+    
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -47,6 +54,30 @@ public class Game1 : Game
 
         // Aktualizace pozice hráče (pozice = pozice + rychlost)
         playerPosition += playerVelocity;
+
+        // Zastavení hráče, pokud dosáhne spodního okraje okna
+        if (playerPosition.Y + playerTexture.Height > windowHeight)
+        {
+            playerPosition.Y = windowHeight - playerTexture.Height;  // Nastaví pozici tak, že spodní okraj je na okraji obrazovky
+            playerVelocity.Y = 0;  // Zastaví pohyb směrem dolů
+        }
+
+        // Zastavení hráče, pokud dosáhne horního okraje okna
+        if (playerPosition.Y < 0)
+        {
+            playerPosition.Y = 0;  // Nastavení hráče na horní okraj
+            playerVelocity.Y = 0;  // Zastavení pohybu směrem nahoru
+        }
+
+        // Omezení pohybu na ose X (pokud hráč vyjde z okna)
+        if (playerPosition.X < 0)
+        {
+            playerPosition.X = 0;  // Levý okraj okna
+        }
+        if (playerPosition.X + playerTexture.Width > windowWidth)
+        {
+            playerPosition.X = windowWidth - playerTexture.Width;  // Pravý okraj okna
+        }
 
         base.Update(gameTime);
     }
