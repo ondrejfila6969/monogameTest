@@ -13,6 +13,7 @@ public class Game1 : Game
     private Vector2 playerPosition;
     private Vector2 playerVelocity;  // Rychlost hráče (počátečně 0)
     private const float gravity = 0.5f;  // Gravitace (akcelerace)
+    private bool isOnGround = false;
     
     // Rozměry okna
     private int windowWidth;
@@ -49,50 +50,53 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // Získání stavu klávesnice
         KeyboardState keyboardState = Keyboard.GetState();
 
-        // Vodorovný pohyb
+        // --- Vodorovný pohyb (A, D)
         float moveSpeed = 3f;
-
         if (keyboardState.IsKeyDown(Keys.A))
-        {
             playerPosition.X -= moveSpeed;
-        }
         if (keyboardState.IsKeyDown(Keys.D))
-        {
             playerPosition.X += moveSpeed;
+
+        // --- Skákání (W, SPACE)
+        float jumpStrength = -10f;
+        if (isOnGround && (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Space)))
+        {
+            playerVelocity.Y = jumpStrength;
+            isOnGround = false;
         }
 
-        // Aplikování gravitace na rychlost
+        // --- Gravitace
         playerVelocity.Y += gravity;
 
-        // Aktualizace pozice hráče
+        // --- Aktualizace pozice hráče
         playerPosition += new Vector2(0, playerVelocity.Y);
 
-        // Zastavení hráče, pokud dosáhne spodního okraje okna
-        if (playerPosition.Y + playerTexture.Height > windowHeight)
+        // --- Kontrola spodního okraje okna (dopad)
+        if (playerPosition.Y + playerTexture.Height >= windowHeight)
         {
             playerPosition.Y = windowHeight - playerTexture.Height;
             playerVelocity.Y = 0;
+            isOnGround = true;
+        }
+        else
+        {
+            isOnGround = false;
         }
 
-        // Zastavení hráče, pokud dosáhne horního okraje okna
+        // --- Kontrola horního okraje okna
         if (playerPosition.Y < 0)
         {
             playerPosition.Y = 0;
             playerVelocity.Y = 0;
         }
 
-        // Omezení pohybu na ose X (okraje obrazovky)
+        // --- Omezení pohybu vlevo a vpravo
         if (playerPosition.X < 0)
-        {
             playerPosition.X = 0;
-        }
         if (playerPosition.X + playerTexture.Width > windowWidth)
-        {
             playerPosition.X = windowWidth - playerTexture.Width;
-        }
 
         base.Update(gameTime);
     }
