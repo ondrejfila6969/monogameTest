@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -14,6 +15,9 @@ public class Game1 : Game
     private Vector2 playerVelocity;  // Rychlost hráče (počátečně 0)
     private const float gravity = 0.5f;  // Gravitace (akcelerace)
     private bool isOnGround = false;
+    private List<Vector2> platformPositions;
+    private Rectangle platformSourceRect = new Rectangle(0, 0, 100, 20); // výřez z tilesetu
+    
     
     // Rozměry okna
     private int windowWidth;
@@ -29,14 +33,23 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // Načteme rozměry okna
-        windowWidth = _graphics.PreferredBackBufferWidth + 105;
-        windowHeight = _graphics.PreferredBackBufferHeight + 97;
+        windowWidth = _graphics.PreferredBackBufferWidth + 120;
+        windowHeight = _graphics.PreferredBackBufferHeight + 120;
         Console.WriteLine(windowHeight);
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
+        platformPositions = new List<Vector2>
+        {
+            new Vector2(100, 500),
+            new Vector2(250, 450),
+            new Vector2(400, 400),
+            new Vector2(600, 500),
+            new Vector2(100, windowHeight - 20) // základní podlaha
+        };
+        
         // Načtení textury hráče
         playerTexture = Content.Load<Texture2D>("spritesheet");
         playerPosition = new Vector2(200, 200);  // Počáteční pozice
@@ -107,11 +120,9 @@ public class Game1 : Game
 
         _spriteBatch.Begin();
 
-        // Nastavíme velikost spritu na 8x8 pixelů
-        Rectangle rectangle = new Rectangle(0, 0, 100, 100);
-        
-        // Vykreslíme hráče na obrazovku
-        _spriteBatch.Draw(playerTexture, playerPosition, rectangle, Color.White);
+        // --- Vykresli hráče
+        Rectangle playerRect = new Rectangle(0, 0, 8, 8);
+        _spriteBatch.Draw(playerTexture, playerPosition, playerRect, Color.White);
 
         _spriteBatch.End();
 
